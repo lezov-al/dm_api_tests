@@ -11,7 +11,7 @@ def test_put_v1_account_token():
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
 
     # Регистрация
-    login = f'kol9n_iz_dvora3'
+    login = f'kol9n_iz_dvora_5'
     email = f'{login}@mail.ru'
     password = '123123123'
 
