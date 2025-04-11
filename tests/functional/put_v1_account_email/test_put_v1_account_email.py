@@ -5,15 +5,16 @@ from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
 
 
-def test_post_v1_account():
+def test_put_v1_account_email():
     account_api = AccountApi(host='http://5.63.153.31:5051')
     login_api = LoginApi(host='http://5.63.153.31:5051')
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
 
     # Регистрация
-    login = f'allezov12'
+    login = f'mihailstena3'
     email = f'{login}@mail.ru'
     password = '123123123'
+    new_email = email.replace('.ru', '.com')
 
     json_data = {
         'login': login,
@@ -37,6 +38,35 @@ def test_post_v1_account():
     assert response.status_code == 200, f" Не удалось активировать пользователя {response.json()}"
 
     # Авторизация
+    response = login_api.post_v1_account_login(json_data=json_data)
+    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+
+    # Меняем пользователю email
+    response = account_api.put_v1_account_email(
+        login=login,
+        password=password,
+        email=new_email
+    )
+    assert response.status_code == 200, f" Не удалось изменить email пользователю {login}, {response.json()}"
+
+    # Авторизация c неподтверденным email
+    response = login_api.post_v1_account_login(json_data=json_data)
+    assert response.status_code == 403, (f"Ожидался статус 403 (Forbidden), но получен {response.status_code},"
+                                         f" {response.json()}")
+
+    # Получить письма из почтового сервера,
+    response = mailhog_api.get_api_v2_messages()
+    assert response.status_code == 200, f" Письма не получены {response.json()}"
+
+    # Получить активационный токен
+    token = get_activation_token_by_login(login=login, response=response)
+    assert token is not None, f"Токен для пользователя {login}, не был получен"
+
+    # Активация нового токена
+    response = account_api.put_v1_account_token(token=token)
+    assert response.status_code == 200, f" Не удалось активировать пользователя {response.json()}"
+
+    # Авторизация с активированным токеном
     response = login_api.post_v1_account_login(json_data=json_data)
     assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
 
