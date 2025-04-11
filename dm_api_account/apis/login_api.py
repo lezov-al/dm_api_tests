@@ -23,4 +23,5 @@ class LoginApi:
             url=f'{self.host}/v1/account/login',
             json=json_data
         )
+
         return response
