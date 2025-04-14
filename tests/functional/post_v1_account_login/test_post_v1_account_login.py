@@ -1,8 +1,20 @@
+import pprint
 from json import loads
 
 from dm_api_account.apis.account_api import AccountApi
 from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
+import structlog
+
+structlog.configure(
+    processors=[
+        structlog.processors.JSONRenderer(
+            indent=4,
+            ensure_ascii=True,
+            sort_keys=True
+        )
+    ]
+)
 
 
 def test_post_v1_account_login():
@@ -11,7 +23,7 @@ def test_post_v1_account_login():
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
 
     # Регистрация
-    login = f'dada_6'
+    login = f'dada_18'
     email = f'{login}@mail.ru'
     password = '123123123'
 
@@ -52,10 +64,12 @@ def get_activation_token_by_login(
     :return:
     """
     token = None
+    pprint.pprint(response)
     for message in response.json()['items']:
         user_data = loads(message['Content']['Body'])
         user_login = user_data['Login']
         if user_login == login:
             token = user_data['ConfirmationLinkUrl'].split('/')[-1]
+            break
 
     return token
