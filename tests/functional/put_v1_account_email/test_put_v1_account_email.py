@@ -25,14 +25,21 @@ def test_put_v1_account_email():
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
     # Регистрация
-    login = f'mihailstena14'
+    login = f'mihailstena86'
     email = f'{login}@mail.ru'
     password = '123123123'
     new_email = email.replace('.ru', '.com')
 
     account_helper.register_new_user(login=login, email=email, password=password)
-    account_helper.user_login(login=login, password=password)
-    account_helper.change_user_email(login=login,password=password,new_email=new_email)
-    account_helper.user_login_without_activation(login=login, email=email, password=password)
+
+    response = account_helper.user_login(login=login, password=password)
+    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+
+    account_helper.change_user_email(login=login, password=password, new_email=new_email)
+
+    response = account_helper.user_login(login=login, password=password)
+    assert response.status_code == 403, f" Не удалось авторизовать пользователя {response.json()}"
     account_helper.activate_user_email(login=login)
-    account_helper.user_login(login=login, password=password)
+
+    response = account_helper.user_login(login=login, password=password)
+    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"

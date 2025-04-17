@@ -80,24 +80,7 @@ class AccountHelper:
         }
 
         response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
         return response
-
-    def user_login_without_activation(
-            self,
-            login: str,
-            password: str,
-            email: str
-    ):
-
-        json_data = {
-            'login': login,
-            'email': email,
-            'password': password
-        }
-        response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 403, (f"Ожидался статус 403 (Forbidden), но получен {response.status_code},"
-                                             f" {response.json()}")
 
     def change_user_email(
             self,
