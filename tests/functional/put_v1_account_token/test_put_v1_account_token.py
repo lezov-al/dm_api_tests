@@ -25,7 +25,7 @@ def test_put_v1_account_token():
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
     # Регистрация
-    login = f'kol9n_iz_dvora_11'
+    login = f'kol9n_iz_dvora_13'
     email = f'{login}@mail.ru'
     password = '123123123'
 

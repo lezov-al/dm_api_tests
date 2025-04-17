@@ -1,7 +1,30 @@
+import time
 from json import loads
 
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DmApiAccount
+
+
+def retrier(
+        func
+        ):
+    def wrapper(
+            *args,
+            **kwargs
+    ):
+        token = None
+        count = 0
+        while token is None:
+            print(f"Попытка получения токена номер {count + 1}")
+            token = func(*args, **kwargs)
+            count += 1
+            if count == 5:
+                raise AssertionError("Превышено кол-во попыток получения активационного токена")
+            if token:
+                return token
+            time.sleep(1)
+
+    return wrapper
 
 
 class AccountHelper:
@@ -37,10 +60,8 @@ class AccountHelper:
             self,
             login: str
     ):
-        response = self.mailhog.mailhog_api.get_api_v2_messages()
-        assert response.status_code == 200, f" Письма не получены {response.json()}"
 
-        token = self.get_activation_token_by_login(login=login, response=response)
+        token = self.get_activation_token_by_login(login=login)
         assert token is not None, f"Токен для пользователя {login}, не был получен"
 
         response = self.dm_api_account.account_api.put_v1_account_token(token=token)
@@ -93,10 +114,10 @@ class AccountHelper:
 
         assert response.status_code == 200, f" Не удалось изменить email пользователю {login}, {response.json()}"
 
-    @staticmethod
+    @retrier
     def get_activation_token_by_login(
-            login,
-            response
+            self,
+            login
     ):
         """
         Get token from emailmessage
@@ -105,6 +126,8 @@ class AccountHelper:
         :return:
         """
         token = None
+        response = self.mailhog.mailhog_api.get_api_v2_messages()
+        assert response.status_code == 200, f" Письма не получены {response.json()}"
         for message in response.json()['items']:
             user_data = loads(message['Content']['Body'])
             user_login = user_data['Login']
