@@ -7,7 +7,7 @@ from services.dm_api_account import DmApiAccount
 
 def retrier(
         func
-        ):
+):
     def wrapper(
             *args,
             **kwargs
@@ -53,9 +53,6 @@ class AccountHelper:
 
         self.activate_user_email(login=login)
 
-        response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
-
     def activate_user_email(
             self,
             login: str
@@ -82,6 +79,18 @@ class AccountHelper:
         response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
         return response
 
+    def user_logout(
+            self
+    ):
+        response = self.dm_api_account.login_api.delete_v1_account_login()
+        return response
+
+    def user_logout_all(
+            self
+    ):
+        response = self.dm_api_account.login_api.delete_v1_account_login_all()
+        return response
+
     def change_user_email(
             self,
             login: str,
@@ -97,15 +106,40 @@ class AccountHelper:
 
         assert response.status_code == 200, f" Не удалось изменить email пользователю {login}, {response.json()}"
 
+    def get_current_user(
+            self
+    ):
+        response = self.dm_api_account.account_api.get_v1_account()
+        return response
+
+    def auth_client(
+            self,
+            login: str,
+            password: str
+    ):
+
+        response = self.dm_api_account.login_api.post_v1_account_login(
+            json_data={
+                'login': login,
+                'password': password
+            }
+        )
+        token = {
+            "x-dm-auth-token": response.headers["x-dm-auth-token"]
+        }
+        self.dm_api_account.account_api.set_headers(token)
+        self.dm_api_account.login_api.set_headers(token)
+
+        return response
+
     @retrier
     def get_activation_token_by_login(
             self,
-            login
+            login: str
     ):
         """
-        Get token from emailmessage
+        Get token from email message
         :param login:
-        :param response:
         :return:
         """
         token = None
@@ -115,7 +149,29 @@ class AccountHelper:
             user_data = loads(message['Content']['Body'])
             user_login = user_data['Login']
             if user_login == login:
-                token = user_data['ConfirmationLinkUrl'].split('/')[-1]
+                token_info = user_data.get('ConfirmationLinkUrl') or user_data.get('ConfirmationLinkUri')
+                token = token_info.split('/')[-1]
                 break
 
         return token
+
+    def change_password(
+            self,
+            login: str,
+            email: str,
+            old_password: str,
+            new_password: str,
+    ):
+        response = self.dm_api_account.account_api.post_v1_account_password(login=login, email=email)
+        assert response.status_code == 200, f" Не удалось сбросил пароль, {response.json()}"
+
+        token = self.get_activation_token_by_login(login=login)
+
+        response = self.dm_api_account.account_api.put_v1_account_password(
+            login=login,
+            token=token,
+            old_password=old_password,
+            new_password=new_password
+        )
+
+        return response
