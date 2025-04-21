@@ -1,5 +1,5 @@
 def test_put_v1_account_password(
-        account_helper,
+        auth_account_helper,
         prepare_test_user
 
 ):
@@ -8,12 +8,7 @@ def test_put_v1_account_password(
     email = prepare_test_user.email
     new_password = prepare_test_user.new_password
 
-    account_helper.register_new_user(login=login, email=email, password=password)
-
-    response = account_helper.auth_client(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
-
-    response = account_helper.change_password(
+    response = auth_account_helper.change_password(
         login=login,
         email=email,
         old_password=password,
@@ -21,5 +16,5 @@ def test_put_v1_account_password(
     )
     assert response.status_code == 200, f" Не удалось изменить пароль {response.json()}"
 
-    response = account_helper.user_login(login=login, password=new_password)
+    response = auth_account_helper.user_login(login=login, password=new_password)
     assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"

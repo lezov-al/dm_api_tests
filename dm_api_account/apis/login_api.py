@@ -32,8 +32,7 @@ class LoginApi(RestClient):
         return response
 
     def delete_v1_account_login_all(
-            self,
-            headers
+            self
     ):
         """
         Logout from every device
@@ -41,7 +40,6 @@ class LoginApi(RestClient):
         """
         response = self.delete(
             path=f'/v1/account/login/all',
-            headers=headers
         )
-        print('headers', headers)
+
         return response
