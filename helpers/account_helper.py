@@ -77,18 +77,26 @@ class AccountHelper:
         }
 
         response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
+
         return response
 
     def user_logout(
             self
     ):
         response = self.dm_api_account.login_api.delete_v1_account_login()
+
         return response
 
     def user_logout_all(
-            self
+            self,
+            login,
+            password
+
     ):
-        response = self.dm_api_account.login_api.delete_v1_account_login_all()
+        _, token = self.get_auth_token(login, password)
+        # print(token, login)
+        response = self.dm_api_account.login_api.delete_v1_account_login_all(headers=token)
+
         return response
 
     def change_user_email(
@@ -117,6 +125,18 @@ class AccountHelper:
             login: str,
             password: str
     ):
+        response, token = self.get_auth_token(login=login, password=password)
+
+        self.dm_api_account.account_api.set_headers(token)
+        self.dm_api_account.login_api.set_headers(token)
+
+        return response
+
+    def get_auth_token(
+            self,
+            login,
+            password
+    ):
 
         response = self.dm_api_account.login_api.post_v1_account_login(
             json_data={
@@ -127,10 +147,8 @@ class AccountHelper:
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
         }
-        self.dm_api_account.account_api.set_headers(token)
-        self.dm_api_account.login_api.set_headers(token)
 
-        return response
+        return response, token
 
     @retrier
     def get_activation_token_by_login(
