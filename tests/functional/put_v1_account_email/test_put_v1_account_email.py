@@ -11,6 +11,7 @@ def test_put_v1_account_email(
 
     response = account_helper.user_login(login=login, password=password)
     assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+    assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
 
     account_helper.change_user_email(login=login, password=password, new_email=new_email)
 

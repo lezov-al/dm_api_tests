@@ -57,8 +57,10 @@ class AccountHelper:
             self,
             login: str
     ):
-
+        start_time = time.time()
         token = self.get_activation_token_by_login(login=login)
+        end_time = time.time()
+        assert end_time - start_time < 3, "Время ожидания активации превышено"
         assert token is not None, f"Токен для пользователя {login}, не был получен"
 
         response = self.dm_api_account.account_api.put_v1_account_token(token=token)
@@ -75,7 +77,6 @@ class AccountHelper:
             'password': password,
             'remember_me': remember_me
         }
-
         response = self.dm_api_account.login_api.post_v1_account_login(json_data=json_data)
 
         return response
@@ -123,16 +124,10 @@ class AccountHelper:
     ):
         self.register_new_user(login=login, password=password, email=email)
 
-        response = self.dm_api_account.login_api.post_v1_account_login(
-            json_data={
-                'login': login,
-                'password': password
-            }
-        )
+        response = self.user_login(login=login, password=password)
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
         }
-
         self.dm_api_account.account_api.set_headers(token)
         self.dm_api_account.login_api.set_headers(token)
 
