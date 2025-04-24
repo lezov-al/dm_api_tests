@@ -41,7 +41,9 @@ def account_helper(
         mailhog_api
 ):
     account_helper = AccountHelper(dm_account_api=account_api, mailhog=mailhog_api)
-    return account_helper
+    yield account_helper
+    account_helper.dm_api_account.close_session()
+    # return account_helper
 
 
 @pytest.fixture(scope='function')

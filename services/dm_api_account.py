@@ -11,3 +11,9 @@ class DmApiAccount:
         self.configuration = configuration
         self.login_api = LoginApi(configuration=configuration)
         self.account_api = AccountApi(configuration=configuration)
+
+    def close_session(
+            self
+    ):
+        self.account_api.session.close()
+        self.login_api.session.close()
