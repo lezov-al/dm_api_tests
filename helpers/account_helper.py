@@ -68,7 +68,9 @@ class AccountHelper:
         assert end_time - start_time < 3, "Время ожидания активации превышено"
         assert token is not None, f"Токен для пользователя {login}, не был получен"
 
-        return self.dm_api_account.account_api.put_v1_account_token(token=token)
+        response = self.dm_api_account.account_api.put_v1_account_token(token=token)
+        print('123123',response)
+        return response
 
     def user_login(
             self,

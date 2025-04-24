@@ -43,4 +43,3 @@ def test_post_v1_account(
             )
         )
     )
-    # has_property('resource', has_property('registration', instance_of(datetime)))

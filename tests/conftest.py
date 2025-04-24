@@ -43,7 +43,6 @@ def account_helper(
     account_helper = AccountHelper(dm_account_api=account_api, mailhog=mailhog_api)
     yield account_helper
     account_helper.dm_api_account.close_session()
-    # return account_helper
 
 
 @pytest.fixture(scope='function')
@@ -59,7 +58,8 @@ def auth_account_helper(
         password="123123123",
         email="test_user_007@mail.ru"
     )
-    return account_helper
+    yield account_helper
+    account_helper.dm_api_account.close_session()
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def prepare_test_user():
     now = datetime.now()
     data = now.strftime("%d_%m_%Y_%H_%M_%S")
 
-    login = f'allezov_{data}'
+    login = f'allezov{data}'
     email = f'{login}@mail.ru'
     new_email = email.replace('.ru', '.com')
     password = '123123123'
