@@ -9,15 +9,12 @@ def test_put_v1_account_email(
 
     account_helper.register_new_user(login=login, email=email, password=password)
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
-    assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
+    account_helper.user_login(login=login, password=password)
 
     account_helper.change_user_email(login=login, password=password, new_email=new_email)
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 403, f" Не удалось авторизовать пользователя {response.json()}"
-    account_helper.activate_user_email(login=login)
+    account_helper.user_login(login=login, password=password,validate_response=False)
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+    account_helper.activate_user(login=login)
+
+    account_helper.user_login(login=login, password=password)

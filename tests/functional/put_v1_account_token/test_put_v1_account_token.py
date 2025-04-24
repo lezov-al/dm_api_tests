@@ -7,5 +7,4 @@ def test_put_v1_account_token(
     email = prepare_test_user.email
 
     account_helper.register_new_user(login=login, email=email, password=password)
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+    account_helper.user_login(login=login, password=password)

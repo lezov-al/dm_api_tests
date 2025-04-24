@@ -23,7 +23,7 @@ structlog.configure(
 
 @pytest.fixture(scope='session')
 def account_api():
-    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=True)
+    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
     account_client = DmApiAccount(configuration=dm_api_configuration)
     return account_client
 
@@ -48,17 +48,16 @@ def account_helper(
 
 @pytest.fixture(scope='function')
 def auth_account_helper(
-        mailhog_api,
-        prepare_test_user
+        mailhog_api
 ):
     dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
     account_client = DmApiAccount(configuration=dm_api_configuration)
     account_helper = AccountHelper(dm_account_api=account_client, mailhog=mailhog_api)
 
     account_helper.auth_client(
-        login=prepare_test_user.login,
-        password=prepare_test_user.password,
-        email=prepare_test_user.email
+        login="test_user_007",
+        password="123123123",
+        email="test_user_007@mail.ru"
     )
     return account_helper
 

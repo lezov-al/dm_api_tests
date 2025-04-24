@@ -76,8 +76,8 @@ class AccountHelper:
             login: str,
             password: str,
             remember_me: bool = True,
-            validate_response: bool = False,
-            validate_headers: bool = False
+            validate_response: bool = True,
+            validate_headers: bool = True
     ):
         login_credentials = LoginCredentials(
             login=login,
@@ -120,12 +120,14 @@ class AccountHelper:
             email=new_email
         )
 
-        self.dm_api_account.account_api.put_v1_account_email(change_email=change_email)
+        response = self.dm_api_account.account_api.put_v1_account_email(change_email=change_email)
+        return response
 
     def get_current_user(
-            self
+            self,
+            **kwargs
     ):
-        response = self.dm_api_account.account_api.get_v1_account()
+        response = self.dm_api_account.account_api.get_v1_account(**kwargs)
         return response
 
     def auth_client(
@@ -134,9 +136,8 @@ class AccountHelper:
             password: str,
             email: str
     ):
-        self.register_new_user(login=login, password=password, email=email)
+        response = self.user_login(login=login, password=password,validate_response=False)
 
-        response = self.user_login(login=login, password=password)
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
         }
