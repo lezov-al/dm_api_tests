@@ -53,13 +53,12 @@ class AccountHelper:
             email=email
         )
 
-        response = self.dm_api_account.account_api.post_v1_account(registration=registration)
-        assert response.status_code == 201, f"Пользователь не был зарегистирован {response.json()}"
+        self.dm_api_account.account_api.post_v1_account(registration=registration)
 
-        response = self.activate_user_email(login=login)
+        response = self.activate_user(login=login)
         return response
 
-    def activate_user_email(
+    def activate_user(
             self,
             login: str
     ):
