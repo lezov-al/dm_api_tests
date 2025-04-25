@@ -8,7 +8,6 @@ from hamcrest import (
     instance_of,
     equal_to,
     has_properties,
-
 )
 
 
@@ -21,8 +20,12 @@ def test_post_v1_account(
     email = prepare_test_user.email
 
     account_helper.register_new_user(login=login, email=email, password=password)
-    response = account_helper.user_login(login=login, password=password, validate_response=True)
-    print(response)
+    response = account_helper.user_login(
+        login=login,
+        password=password,
+        validate_response=True,
+        validate_headers=False
+        )
 
     assert_that(
         response, all_of(

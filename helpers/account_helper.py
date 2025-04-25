@@ -69,7 +69,6 @@ class AccountHelper:
         assert token is not None, f"Токен для пользователя {login}, не был получен"
 
         response = self.dm_api_account.account_api.put_v1_account_token(token=token)
-        print('123123',response)
         return response
 
     def user_login(
@@ -134,10 +133,9 @@ class AccountHelper:
     def auth_client(
             self,
             login: str,
-            password: str,
-            email: str
+            password: str
     ):
-        response = self.user_login(login=login, password=password,validate_response=False)
+        response = self.user_login(login=login, password=password, validate_response=False)
 
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]

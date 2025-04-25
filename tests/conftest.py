@@ -56,7 +56,6 @@ def auth_account_helper(
     account_helper.auth_client(
         login="test_user_007",
         password="123123123",
-        email="test_user_007@mail.ru"
     )
     yield account_helper
     account_helper.dm_api_account.close_session()

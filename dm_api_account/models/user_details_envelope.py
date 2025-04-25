@@ -34,7 +34,7 @@ class ColorSchema(str, Enum):
 
 
 class UserSettings(BaseModel):
-    color_schema: ColorSchema = Field(None)
+    color_schema: ColorSchema = Field(None, alias='colorSchema')
     nanny_greetings_message: str = Field(None, alias='nannyGreetingsMessage')
     paging: PagingSettings
 
