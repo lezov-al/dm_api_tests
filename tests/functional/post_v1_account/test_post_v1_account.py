@@ -1,5 +1,8 @@
+from collections import namedtuple
 from datetime import datetime
+import pytest
 
+from checkers.http_checker import check_status_code_http
 from hamcrest import (
     assert_that,
     has_property,
@@ -9,6 +12,45 @@ from hamcrest import (
     equal_to,
     has_properties,
 )
+
+
+def get_user_data():
+    now = datetime.now()
+    data = now.strftime("%d_%m_%Y_%H_%M_%S")
+
+    login = f'test_negative{data}'
+    email = f'{login}@mail.ru'
+    password = '123123123'
+
+    User = namedtuple("User", ['login', 'password', 'email'])
+    user = User(login=login, password=password, email=email)
+    return user
+
+
+user_data = get_user_data()
+
+
+@pytest.mark.parametrize(
+    'login, password, email,  error_type', [
+        (user_data.login, '123', user_data.email, 'password'),
+        ('a', user_data.password, user_data.email, 'login'),
+        (user_data.login, user_data.password, 'lolkek.ru', 'email'),
+    ]
+)
+def test_post_v1_account_negative(
+        login,
+        password,
+        email,
+        error_type,
+        account_helper,
+        prepare_test_user,
+):
+    with check_status_code_http(
+            error_type=error_type,
+            expected_status_code=400,
+            expected_message='Validation failed'
+    ):
+        account_helper.register_new_user(login=login, email=email, password=password)
 
 
 def test_post_v1_account(
@@ -25,7 +67,7 @@ def test_post_v1_account(
         password=password,
         validate_response=True,
         validate_headers=False
-        )
+    )
 
     assert_that(
         response, all_of(

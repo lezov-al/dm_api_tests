@@ -1,4 +1,4 @@
-from checkers.http_checher import check_status_code_http
+from checkers.http_checker import check_status_code_http
 
 
 def test_put_v1_account_email(
@@ -39,4 +39,3 @@ def test_put_v1_account_email(
             validate_response=True,
             validate_headers=False
         )
-
