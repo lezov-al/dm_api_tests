@@ -53,9 +53,7 @@ class AccountHelper:
             email=email
         )
 
-        print('ща начнется?')
         self.dm_api_account.account_api.post_v1_account(registration=registration)
-        print('оогоя?')
 
         response = self.activate_user(login=login)
         return response
