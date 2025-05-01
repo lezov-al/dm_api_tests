@@ -2,7 +2,6 @@ from collections import namedtuple
 from datetime import datetime
 import pytest
 from checkers.post_v1_account import PostV1Account
-
 from checkers.http_checker import check_status_code_http
 
 
@@ -60,4 +59,5 @@ def test_post_v1_account(
         validate_response=True,
         validate_headers=False
     )
-    PostV1Account.check_response_values(response)
+    checker_login = login.split('_')[0]
+    PostV1Account.check_response_values(response, login=checker_login)

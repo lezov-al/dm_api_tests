@@ -66,7 +66,7 @@ def prepare_test_user():
     now = datetime.now()
     data = now.strftime("%d_%m_%Y_%H_%M_%S")
 
-    login = f'allezov{data}'
+    login = f'allezov_{data}'
     email = f'{login}@mail.ru'
     new_email = email.replace('.ru', '.com')
     password = '123123123'

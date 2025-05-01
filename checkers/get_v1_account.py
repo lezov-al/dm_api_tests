@@ -2,7 +2,6 @@ from datetime import datetime
 
 from hamcrest import (
     assert_that,
-    starts_with,
     all_of,
     has_property,
     has_properties,
@@ -11,17 +10,15 @@ from hamcrest import (
 )
 
 
-class PostV1Account:
+class GetV1Account:
     @staticmethod
     def check_response_values(
             response,
             login: str = ''
     ):
-        today = datetime.now().strftime('%Y-%m-%d')
-        assert_that(str(response.resource.registration), starts_with(today))
         assert_that(
             response, all_of(
-                has_property('resource', has_property('login', starts_with(login))),
+                has_property('resource', has_property('login', equal_to(login))),
                 has_property('resource', has_property('registration', instance_of(datetime))),
                 has_property(
                     'resource', has_properties(
