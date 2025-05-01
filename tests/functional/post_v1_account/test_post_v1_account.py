@@ -54,11 +54,8 @@ def test_post_v1_account_negative(
             expected_status_code=400,
             expected_message='Validation failed'
     ):
-        try:
-            account_helper.register_new_user(login=login, email=email, password=password)
-        except HTTPError as e:
-            check_field_error(e.response, field, error_message)
-            raise
+        response = account_helper.register_new_user(login=login, email=email, password=password)
+        check_field_error(response.response, field, error_message)
 
 
 def test_post_v1_account(
