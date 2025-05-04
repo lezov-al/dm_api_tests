@@ -1,7 +1,6 @@
 from collections import namedtuple
 from datetime import datetime
 import pytest
-from requests import HTTPError
 
 from checkers.http_checker import (
     check_status_code_http,
