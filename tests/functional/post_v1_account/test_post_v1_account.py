@@ -8,7 +8,6 @@ from checkers.http_checker import (
 )
 
 
-
 def get_user_data():
     now = datetime.now()
     data = now.strftime("%d_%m_%Y_%H_%M_%S")

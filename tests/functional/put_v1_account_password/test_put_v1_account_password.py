@@ -18,4 +18,8 @@ def test_put_v1_account_password(
         new_password=new_password
     )
 
-    account_helper.user_login(login=login, password=new_password)
+    account_helper.user_login(
+        login=login,
+        password=new_password,
+        validate_response=False
+    )
