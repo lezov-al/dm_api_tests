@@ -2,7 +2,11 @@ from collections import namedtuple
 from datetime import datetime
 import pytest
 from checkers.post_v1_account import PostV1Account
-from checkers.http_checker import check_status_code_http
+from checkers.http_checker import (
+    check_status_code_http,
+    check_field_error,
+)
+
 
 
 def get_user_data():
@@ -22,26 +26,27 @@ user_data = get_user_data()
 
 
 @pytest.mark.parametrize(
-    'login, password, email,  error_type', [
-        (user_data.login, '123', user_data.email, 'password'),
-        ('a', user_data.password, user_data.email, 'login'),
-        (user_data.login, user_data.password, 'lolkek.ru', 'email'),
+    'login, password, email, field,  error_message', [
+        (user_data.login, '123', user_data.email, 'Password', 'Short'),
+        ('a', user_data.password, user_data.email, 'Login', 'Short'),
+        (user_data.login, user_data.password, 'lolkek.ru', 'Email', 'Invalid'),
     ]
 )
 def test_post_v1_account_negative(
         login,
         password,
         email,
-        error_type,
+        field,
+        error_message,
         account_helper,
         prepare_test_user,
 ):
     with check_status_code_http(
-            error_type=error_type,
             expected_status_code=400,
             expected_message='Validation failed'
     ):
-        account_helper.register_new_user(login=login, email=email, password=password)
+        response = account_helper.register_new_user(login=login, email=email, password=password)
+        check_field_error(response.response, field, error_message)
 
 
 def test_post_v1_account(
