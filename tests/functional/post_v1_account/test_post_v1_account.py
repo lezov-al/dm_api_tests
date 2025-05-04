@@ -1,20 +1,12 @@
 from collections import namedtuple
 from datetime import datetime
 import pytest
-
+from checkers.post_v1_account import PostV1Account
 from checkers.http_checker import (
     check_status_code_http,
     check_field_error,
 )
-from hamcrest import (
-    assert_that,
-    has_property,
-    starts_with,
-    all_of,
-    instance_of,
-    equal_to,
-    has_properties,
-)
+
 
 
 def get_user_data():
@@ -72,23 +64,5 @@ def test_post_v1_account(
         validate_response=True,
         validate_headers=False
     )
-
-    assert_that(
-        response, all_of(
-            has_property('resource', has_property('login', starts_with("allezov"))),
-            has_property('resource', has_property('registration', instance_of(datetime))),
-            has_property(
-                'resource', has_properties(
-                    {
-                        "rating": has_properties(
-                            {
-                                "enabled": equal_to(True),
-                                "quality": equal_to(0),
-                                "quantity": equal_to(0)
-                            }
-                        )
-                    }
-                )
-            )
-        )
-    )
+    checker_login = login.split('_')[0]
+    PostV1Account.check_response_values(response, login=checker_login)
