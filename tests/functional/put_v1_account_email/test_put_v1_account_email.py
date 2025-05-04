@@ -1,3 +1,6 @@
+from checkers.http_checker import check_status_code_http
+
+
 def test_put_v1_account_email(
         account_helper,
         prepare_test_user
@@ -9,14 +12,30 @@ def test_put_v1_account_email(
 
     account_helper.register_new_user(login=login, email=email, password=password)
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+    with check_status_code_http(200):
+        account_helper.user_login(
+            login=login,
+            password=password,
+            validate_response=True,
+            validate_headers=False
+        )
 
     account_helper.change_user_email(login=login, password=password, new_email=new_email)
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 403, f" Не удалось авторизовать пользователя {response.json()}"
-    account_helper.activate_user_email(login=login)
+    with check_status_code_http(403, 'User is inactive. Address the technical support for more details'):
+        account_helper.user_login(
+            login=login,
+            password=password,
+            validate_response=True,
+            validate_headers=False
+        )
 
-    response = account_helper.user_login(login=login, password=password)
-    assert response.status_code == 200, f" Не удалось авторизовать пользователя {response.json()}"
+    account_helper.activate_user(login=login)
+
+    with check_status_code_http(200):
+        account_helper.user_login(
+            login=login,
+            password=password,
+            validate_response=True,
+            validate_headers=False
+        )

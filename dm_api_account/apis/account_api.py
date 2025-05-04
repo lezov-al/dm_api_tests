@@ -1,9 +1,16 @@
+from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.change_password import ChangePassword
+from dm_api_account.models.registration import Registration
+from dm_api_account.models.reset_password import ResetPassword
+from dm_api_account.models.user_details_envelope import UserDetailsEnvelope
+from dm_api_account.models.user_envelope import UserEnvelope
 from restclient.client import RestClient
 
 
 class AccountApi(RestClient):
     def get_v1_account(
             self,
+            validate_response=True,
             **kwargs
     ):
         """
@@ -15,113 +22,98 @@ class AccountApi(RestClient):
             **kwargs
         )
 
+        if validate_response:
+            return UserDetailsEnvelope(**response.json())
+
         return response
 
     def post_v1_account(
             self,
-            json_data
+            registration: Registration
     ):
         """
         Register new user
-        :param json_data:
         :return:
         """
         response = self.post(
             path=f'/v1/account',
-            json=json_data
+            json=registration.model_dump(exclude_none=True, by_alias=True)
         )
 
         return response
 
     def put_v1_account_token(
             self,
-            token
+            token,
+            validate_response=True
     ):
         """
         Activate registered user
         :param token:
+        :param validate_response:
         :return:
         """
         response = self.put(
             path=f'/v1/account/{token}'
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
 
         return response
 
     def put_v1_account_email(
             self,
-            login,
-            password,
-            email
+            change_email: ChangeEmail,
+            validate_response=True
     ):
         """
         Change registered user email
-        :param login:
-        :param password:
-        :param email:
+        :param change_email:
+        :param validate_response:
         :return:
         """
-        json_data = {
-            'login': login,
-            'password': password,
-            'email': email
-        }
 
         response = self.put(
             path=f'/v1/account/email',
-            json=json_data
+            json=change_email.model_dump(exclude_none=True, by_alias=True)
         )
-
+        if validate_response:
+            return UserDetailsEnvelope(**response.json())
         return response
 
     def put_v1_account_password(
             self,
-            login,
-            token,
-            old_password,
-            new_password
+            change_password: ChangePassword,
+            validate_response=False
     ):
         """
         Change registered user password
-        :param login:
-        :param token:
-        :param old_password:
-        :param new_password:
+        :param change_password:
+        :param validate_response:
         :return:
         """
-        json_data = {
-            'login': login,
-            'token': token,
-            'oldPassword': old_password,
-            'newPassword': new_password,
-        }
-
         response = self.put(
             path=f'/v1/account/password',
-            json=json_data
+            json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
 
         return response
 
     def post_v1_account_password(
             self,
-            login,
-            email
+            reset_password: ResetPassword
     ):
         """
         Reset registered user password
-        :param login:
-        :param email:
+        :param reset_password:
         :return:
         """
-        json_data = {
-            'login': login,
-            'email': email
-        }
 
         response = self.post(
             path=f'/v1/account/password',
-            json=json_data
+            json=reset_password.model_dump(exclude_none=True, by_alias=True)
         )
 
         return response
