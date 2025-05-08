@@ -55,17 +55,3 @@ jobs:
           path: _site
           retention-days: 1
 
-  publish-report:
-    runs-on: ubuntu-latest
-    needs: generate-report
-    name: Publish report
-    steps:
-      - name: Download site report
-        uses: actions/download-artifact@v4
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-        id: deployment
-
-
