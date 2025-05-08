@@ -25,6 +25,7 @@ jobs:
 
       - name: Run tests
         run: |
+          mkdir -p allure-results
           pytest ./tests -alluredir=allure-results --disable-warnings
         continue-on-error: true
 
@@ -40,7 +41,7 @@ jobs:
     needs: test
     name: Generate report
     steps:
-      - uses: actions/setup-java@3
+      - uses: actions/setup-java@v3.13.0
         with:
           distribution: 'microsoft'
           java-version: '17'
