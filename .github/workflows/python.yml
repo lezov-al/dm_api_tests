@@ -25,8 +25,7 @@ jobs:
 
       - name: Run tests
         run: |
-          mkdir -p allure-results
-          pytest ./tests -alluredir=allure-results --disable-warnings
+          pytest ./tests
         continue-on-error: true
 
       - name: Archive allure results
