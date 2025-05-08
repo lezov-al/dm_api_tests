@@ -1,6 +1,8 @@
 import time
 from json import loads
 
+import allure
+
 from dm_api_account.models.change_email import ChangeEmail
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.registration import Registration
@@ -41,6 +43,7 @@ class AccountHelper:
         self.dm_api_account = dm_account_api
         self.mailhog = mailhog
 
+    @allure.step("Регистрация нового пользователя")
     def register_new_user(
             self,
             login: str,
@@ -58,6 +61,7 @@ class AccountHelper:
         response = self.activate_user(login=login)
         return response
 
+    @allure.step("Активация пользователя")
     def activate_user(
             self,
             login: str
@@ -71,6 +75,7 @@ class AccountHelper:
         response = self.dm_api_account.account_api.put_v1_account_token(token=token)
         return response
 
+    @allure.step("Аутентификация")
     def user_login(
             self,
             login: str,
@@ -94,6 +99,7 @@ class AccountHelper:
 
         return response
 
+    @allure.step("User_logout")
     def user_logout(
             self
     ):
@@ -101,6 +107,7 @@ class AccountHelper:
 
         return response
 
+    @allure.step("User logout all")
     def user_logout_all(
             self
     ):
@@ -108,6 +115,7 @@ class AccountHelper:
 
         return response
 
+    @allure.step("Изменить email")
     def change_user_email(
             self,
             login: str,
@@ -123,6 +131,7 @@ class AccountHelper:
         response = self.dm_api_account.account_api.put_v1_account_email(change_email=change_email)
         return response
 
+    @allure.step("Получить информацию о пользователе")
     def get_current_user(
             self,
             **kwargs
@@ -130,6 +139,7 @@ class AccountHelper:
         response = self.dm_api_account.account_api.get_v1_account(**kwargs)
         return response
 
+    @allure.step("Аутентификация клиента")
     def auth_client(
             self,
             login: str,
@@ -146,6 +156,7 @@ class AccountHelper:
         return response
 
     @retrier
+    @allure.step("Получить активационный токен")
     def get_activation_token_by_login(
             self,
             login: str
@@ -168,6 +179,7 @@ class AccountHelper:
 
         return token
 
+    @allure.step("Изменить пароль")
     def change_password(
             self,
             login: str,
