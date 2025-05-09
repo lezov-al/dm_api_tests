@@ -10,6 +10,7 @@ from services.dm_api_account import DmApiAccount
 from services.api_mailhog import MailHogApi
 from helpers.account_helper import AccountHelper
 import structlog
+from swagger_coverage_py.reporter import CoverageReporter
 
 structlog.configure(
     processors=[
@@ -29,10 +30,20 @@ options = (
 )
 
 
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_swagger_coverage():
+    reporter = CoverageReporter(api_name="dm-api-account", host="http://5.63.153.31:5051")
+    reporter.cleanup_input_files()
+    reporter.setup("/swagger/Account/swagger.json")
+    yield
+    reporter.generate_report()
+
+
 @pytest.fixture(scope="session", autouse=True)
 def set_config(
         request
-        ):
+):
     config = Path(__file__).joinpath("../../").joinpath("config")
     config_name = request.config.getoption("--env")
     v.set_config_name(config_name)

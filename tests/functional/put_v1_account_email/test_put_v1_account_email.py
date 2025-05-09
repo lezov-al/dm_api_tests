@@ -1,6 +1,10 @@
+import allure
+
 from checkers.http_checker import check_status_code_http
 
 
+@allure.suite("Тесты на проверку метода PUT v1_account_email")
+@allure.title("Проверка смены почтового адреса")
 def test_put_v1_account_email(
         account_helper,
         prepare_test_user
