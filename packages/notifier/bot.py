@@ -1,7 +1,5 @@
-import os
 from pathlib import Path
 from telebot import TeleBot
-from telegram_notifier.exceptions import TelegramNotifierError
 from vyper import v
 
 config = Path(__file__).parent.joinpath("../../").joinpath("config")
