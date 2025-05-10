@@ -43,7 +43,6 @@ def setup_swagger_coverage():
     reporter.setup("/swagger/Account/swagger.json")
     yield
     reporter.generate_report()
-    send_file()
 
 
 @pytest.fixture(scope="session", autouse=True)
